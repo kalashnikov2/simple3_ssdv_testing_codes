@@ -14,7 +14,7 @@ http://piratas.cu.cc/doku.php?id=hub:ssdv:rf95
 ## RFM69
 https://github.com/etrombly/RFM69
 
-pruebas con el otro moduol RF69 que es a 433mhz
+pruebas con el otro modulo RF69 que es a 433mhz
 
 ## RadioHead
 https://github.com/hallard/RadioHead
