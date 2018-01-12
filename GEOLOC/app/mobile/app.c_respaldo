@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include "app.h"
+#include "../frame.h"
+#include <string.h>
+#include "../../lib/gps.h"
+#include <unistd.h>
+
+extern struct NMEA_GGA NmeaGgaFrame;
+
+void runApp(Config config){
+	
+	// Hello msg
+	printf("\n|Starting mobile application|\n\n");
+
+	// Ensure we are in standby mode and apply configuration
+	config.mode=MODE_STDBY;
+	applyMode(config);
+	applyConfig(config);
+
+	// Write frame on sx1276
+	Frame frame;
+	frame.id=234;
+	frame.stamp=81;
+	frame.data[0]=76;
+	frame.data[1]=17;
+	frame.data[2]=16;
+	frame.data[3]=87;
+	frame.data[4]=12;
+	frame.data[5]=106;
+	pushFrame(frame);
+	config.mode=MODE_TX;
+	applyMode(config); // Send frame
+	
+	// Wait for frame to be sending
+	while(1){
+		if(digitalRead(0x7)==1){
+			printf("Packet send !!!\n\n");
+			config.mode=MODE_STDBY;
+			applyMode(config);
+			saveGPSPosition();
+			delay(2000);
+			// Write frame on sx1276
+			pushFrame(frame);
+			config.mode=MODE_TX;
+			applyMode(config); // Send frame
+		}
+	}
+}
+
+void saveGPSPosition(){
+
+	// Fetch GPS position
+	NmeaGgaFrame=getNMEA_GGAFrame();
+
+	// Save in file
+	FILE *file;
+	char filePath[]="gps.csv";
+	short writeHeader=0;
+	if(access( filePath, F_OK ) == -1){
+		writeHeader=1;
+	}
+	file=fopen(filePath,"a+");
+	if(file!=NULL){
+		if(writeHeader){
+			fprintf(file,"GPSSTATE,LatDeg,LatMin,LatSec,LatDir,LonDeg,LonMin,LonSec,LonDir\n");
+		}
+		fprintf(file,"%d,%d,%d,%f,%d,%d,%d,%f,%d\n",
+				NmeaGgaFrame.state,
+				NmeaGgaFrame.latDeg,
+				NmeaGgaFrame.latMin,
+				NmeaGgaFrame.latSec,
+				NmeaGgaFrame.latDir,
+				NmeaGgaFrame.lonDeg,
+				NmeaGgaFrame.lonMin,
+				NmeaGgaFrame.lonSec,
+				NmeaGgaFrame.lonDir);
+		fclose(file);
+	}
+	else{
+		printf("Failed to open file %s.\n",filePath);
+	}
+}

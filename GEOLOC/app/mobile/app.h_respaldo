@@ -1,0 +1,16 @@
+#ifndef app_h
+#define app_h
+
+#include "../../lib/config.h"
+
+/**
+ * Run the application
+ */
+void runApp(Config config);
+
+/**
+ * Save the GPS position
+ */
+void saveGPSPosition();
+
+#endif
