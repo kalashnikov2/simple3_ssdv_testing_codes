@@ -42,7 +42,10 @@ ya esta modificado del original para tx en 915mhz y lo hace, solo falta leer el 
 
 /ssdv   incluido con 2 imagenes de prueba, con originales
 
+## lora-gateway
+https://devhub.io/repos/PiInTheSky-lora-gateway
 
+codigo para RX de las imagenes lora  :D funciona al pelo en el RF69  no la he probado con el RF96
 
 
 ### referente de como transmmitir en python
